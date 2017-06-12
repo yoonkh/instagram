@@ -13,9 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
-
+from post import views as post_views
+# post 앱 내부에 urls모듈을 만들어서 config의 urls에 include
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-]
+    url(r'^post/', include('post.urls')),
+]u23
+
