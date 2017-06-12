@@ -7,10 +7,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-<body>
+    <body>
     {% for post in posts %}
-    <div>{{ post.id }}</div>
+        <div>
+            <span>{{ post.id }}</span>
+            <span>{{ post.photo.url }}</span>
+            <img src="{{ post.photo.url }}" alt="">
+        </div>
+
     {% endfor %}
 
-</body>
+    </body>
 </html>
