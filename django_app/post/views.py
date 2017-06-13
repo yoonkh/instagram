@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.template import loader
+
+User = get_user_model()
 
 from .models import Post
 
@@ -27,6 +30,9 @@ def post_detail(request, post_pk):
     except Post.DoesNotExist as e:
         # return HttpResponseNotFound('Post not found, detail: {}'.format(e))
         return redirect('post:post_list')
+
+        url = reverse('post:post_list')
+        return HttpResponseRedirect(url)
 
     # post = Post.objects.get(id=post_pk)는 위와 같음
 
@@ -55,10 +61,24 @@ def post_detail(request, post_pk):
     return HttpResponse(rendered_string)
 
 
-
 def post_create(request):
     # POST요청을 받아 Post객체를 생성 후 post_list페이지로 redirect
-    pass
+    if request.method == 'POST':
+        user = User.objects.first()
+        post = Post.objects.create(
+            author=user,
+            photo=request.FILES['file'],
+        )
+        comment_string = request.POST.get('comment', '')
+        if comment_string:
+            post.comment_set.create(
+                author=user,
+                content=comment_string,
+            )
+        return redirect('post:post_detail', post_pk=post.pk)
+    else:
+        # post/post_create.html을 render해서 리턴
+        return render(request, 'post/post_create.html')
 
 
 def post_modify(request, post_pk):

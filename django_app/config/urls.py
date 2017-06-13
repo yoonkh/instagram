@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
-from post import views as post_views
+
 
 # post 앱 내부에 urls모듈을 만들어서 config의 urls에 include
 urlpatterns = [
@@ -25,6 +25,6 @@ urlpatterns = [
     url(r'^post/', include('post.urls')),
 ]
 urlpatterns += static(
-    settings.MEDIA_URL,
-    document_root=settings.MEDIA_ROOT
+    prefix=settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT,
 )
