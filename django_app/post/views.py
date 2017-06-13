@@ -1,9 +1,8 @@
-
 from django.http import HttpResponse
+from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.template import loader
 
-from member.models import User
 from .models import Post
 
 
@@ -20,44 +19,57 @@ def post_list(request):
 
 
 def post_detail(request, post_pk):
-    # post_pk에 해당하는 Post객체를 리턴, 보여줌
-    post = Post.objects.get(pk=post_pk)
+    # Model(DB)에서 post_pk에 해당하는 Post객체를 가져와 변수에 할당
+    # ModelManager의 get메서드를 사용해서 단 한개의 객체만 가져온다
+    # https://docs.djangoproject.com/en/1.11/ref/models/querysets/#get
+    try:
+        post = Post.objects.get(pk=post_pk)
+    except Post.DoesNotExist as e:
+        # return HttpResponseNotFound('Post not found, detail: {}'.format(e))
+        return redirect('post:post_list')
+
+    # post = Post.objects.get(id=post_pk)는 위와 같음
+
+    # request에 대해 response를 돌려줄때는 HttpResponse나 render를 사용가능
+    # template을 사용하려면 render함수를 사용한다
+    # render함수는
+    #   django.template.loader.get_template함수와
+    #   django.http.HttpResponse함수를 축약해 놓은 shortcut이다
+    #       https://docs.djangoproject.com/en/1.11/topics/http/shortcuts/#render
+
+    # ! 이 뷰에서는 render를 사용하지 않고, 전체 과정(loader, HttpResponse)을 기술
+    # Django가 템플릿을 검색할 수 있는 모든 디렉토리를 순회하며
+    # 인자로 주어진 문자열값과 일치하는 템플릿이 있는지 확인 후,
+    # 결과를 리턴 (django.template.backends.django.Template클래스형 객체)
+    # get_template()메서드
+    #   https://docs.djangoproject.com/en/1.11/topics/templates/#django.template.loader.get_template
     template = loader.get_template('post/post_detail.html')
+    # dict형 변수 context의 'post'키에 post(Post객체)를 할당
     context = {
+        # context로 전달될 dict의 "키"값이 템플릿에서 사용가능한 변수명이 됨
         'post': post,
     }
+    # template에 인자로 주어진 context, request를 render함수를 사용해서 해당 template을 string으로 변환
     rendered_string = template.render(context=context, request=request)
+    # 변환된 string을 HttpResponse형태로 돌려준다
     return HttpResponse(rendered_string)
+
 
 
 def post_create(request):
     # POST요청을 받아 Post객체를 생성 후 post_list페이지로 redirect
-    if request.method == 'POST':
-        forms = PostCreateForm(request.POST, request.FILES)
-        if forms.is_valid():
-            user = User.objects.first()
-            post = Post.objects.create(author=user, image=request.FILES['image'])
-            comment = forms.cleaned_data['comment']
+    pass
 
 
 def post_modify(request, post_pk):
     # 수정
-    post = Post.objects.get(id=post_pk)
-    if request.method == 'POST':
-        return redirect('/post/')
-    else:
-        context = {
-            'post': post
-        }
-        return render(request, 'post/post_modify.html', context)
+    pass
 
 
 def post_delete(request, post_pk):
     # post_pk에 해당하는 Post에 대한 delete요청만을 받음
     # 처리완료후에는 post_list페이지로 redirect
-    post = Post.objects.get(id=post_pk)
-    post.delete()
-    return redirect('post/post_list.html')
+    pass
 
 
 def comment_create(request, post_pk):
