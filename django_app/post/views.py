@@ -3,10 +3,10 @@ from django.http import HttpResponse
 from django.http import HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.template import loader
+from .models import Post
 
 User = get_user_model()
 
-from .models import Post
 
 
 def post_list(request):
