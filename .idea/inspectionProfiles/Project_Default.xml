@@ -5,6 +5,7 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="config.urls.static" />
+          <option value="member.forms.*" />
         </list>
       </option>
     </inspection_tool>

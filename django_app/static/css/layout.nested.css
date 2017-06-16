@@ -13,8 +13,8 @@ header.top-header > nav:nth-child(1) {
     height: 83px;
     line-height: 83px;
     display: inline-block; }
-  header.top-header > nav:nth-child(1) .nav-item > a > img {
-    vertical-align: middle; }
+    header.top-header > nav:nth-child(1) .nav-item > a > img {
+      vertical-align: middle; }
   header.top-header > nav:nth-child(1) .nav-left {
     float: left;
     margin-right: 20px;
@@ -28,8 +28,8 @@ header.top-header > nav:nth-child(1) {
   header.top-header > nav:nth-child(1) .nav-right {
     width: 150px;
     float: right; }
-  header.top-header > nav:nth-child(1) .nav-right a {
-    padding: 0 10px; }
+    header.top-header > nav:nth-child(1) .nav-right a {
+      padding: 0 10px; }
 
 header.top-header > nav:nth-child(2) {
   border-top: 1px solid rgba(0, 0, 0, 0.0975);
@@ -39,6 +39,15 @@ header.top-header > nav:nth-child(2) {
     max-width: 1010px;
     margin: 0 auto; }
 
+form.form-inline-login {
+  font-size: 11px; }
+  form.form-inline-login label {
+    margin-right: 5px; }
+  form.form-inline-login input {
+    padding: 5px 8px;
+    font-size: 11px;
+    margin-right: 6px; }
+
 .container {
   max-width: 1010px;
   margin: 0 auto;
@@ -46,3 +55,6 @@ header.top-header > nav:nth-child(2) {
   @media screen and (max-width: 700px) {
     .container {
       padding-top: 0; } }
+
+.container > .content {
+  padding: 0 10px; }

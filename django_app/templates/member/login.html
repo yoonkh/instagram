@@ -4,8 +4,7 @@
 <div>
 	<form action="" method="POST">
 		{% csrf_token %}
-		<input type="text" name="username">
-		<input type="password" name="password">
+		{% include 'include/field_set.html' %}
 		<button type="submit">로그인!</button>
 	</form>
 </div>
