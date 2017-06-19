@@ -1,7 +1,9 @@
 from django import forms
+from django.contrib.auth import get_user_model
 
 from ..models import Post, Comment
 
+User = get_user_model()
 
 class PostForm(forms.ModelForm):
     # 생성자를 조작해서 실제 Post의 photo필드는 blank=True
@@ -10,6 +12,8 @@ class PostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['photo'].required = True
+        if self.instance.my_comment:
+            self.fields['comment'].initial = self.instance.my_comment.content
 
     comment = forms.CharField(
         required=False,
@@ -29,8 +33,9 @@ class PostForm(forms.ModelForm):
         # 전달된 키워드인수중 'author'키 값을 가져오고, 기존 kwargs dict에서 제외
         author = kwargs.pop('author', None)
 
-        # super()의 save()호출
-        self.instance.author = author
+        if not self.instance.pk or isinstance(author, User):
+            self.instance.author = author
+            # super()의 save()호출
         instance = super().save(**kwargs)
 
         # commit인수가 True이며 comment필드가 채워져 있을 경우 Comment생성 로직을 진행
@@ -44,7 +49,7 @@ class PostForm(forms.ModelForm):
             else:
                 instance.my_comment = Comment.objects.create(
                     post=instance,
-                    author=author,
+                    author=instance.author,
                     content=comment_string,
                 )
             instance.save()
