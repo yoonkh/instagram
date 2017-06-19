@@ -8,7 +8,7 @@
   font-size: 11px; }
 
 .field-wrapper {
-  margin-bottom: 6px; }
+  margin-bottom: 10px; }
   .field-wrapper ul.errors {
     font-size: 11px;
     color: red;
@@ -17,6 +17,9 @@
   .field-wrapper label {
     font-size: 11px; }
   .field-wrapper input[type=text], .field-wrapper input[type=password] {
+    width: 100%;
+    box-sizing: border-box; }
+  .field-wrapper input[type=file] {
     width: 100%;
     box-sizing: border-box; }
   .field-wrapper p.help {
