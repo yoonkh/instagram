@@ -7,6 +7,7 @@ member application생성
 import re
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 
 
 class Post(models.Model):
@@ -62,24 +63,33 @@ class Comment(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # ex) 박보영 #여신 #존예 인스타
-        # -> '박보영 <a href='#'>#여신</a> <a href='#'>#존예</a> 인스타
-        # 해당 내용을 self.html_content에 대입
-        p = re.compile(r'(#\w+)')
-        tag_name_list = re.findall(p, self.content)
-        ori_content = self.content
-        for tag_name in tag_name_list:
-            tag, _ = Tag.objects.get_or_create(name=tag_name.replace('#', ''))
-            ori_content = ori_content.replace(
-                tag_name,
-                '<a href="#">{}</a>'.format(
-                tag_name,
-                   )
-            )
-
-
         super().save(*args, **kwargs)
+        self.make_html_content_and_add_tags()
 
+    def make_html_content_and_add_tags(self):
+        # 해시태그에 해당하는 정규표현식
+        p = re.compile(r'(#\w+)')
+        # findall메서드로 해시태그 문자열들을 가져옴
+        tag_name_list = re.findall(p, self.content)
+        # 기존 content(Comment내용)을 변수에 할당
+        ori_content = self.content
+        # 문자열들을 순회하며
+        for tag_name in tag_name_list:
+            # Tag객체를 가져오거나 생성, 생성여부는 쓰지않는 변수이므로 _처리
+            tag, _ = Tag.objects.get_or_create(name=tag_name.replace('#', ''))
+            # 기존 content의 내용을 변경
+            change_tag = '<a href="{url}" class="hash-tag">{tag_name}</a>'.format(
+                # url=reverse('post:hashtag_post_list', args=[tag_name.replace('#', '')]),
+                url=reverse('post:hashtag_post_list', kwargs={'tag_name': tag_name.replace('#', '')}),
+                tag_name=tag_name
+            )
+            ori_content = re.sub(r'{}(?![<\w])'.format(tag_name), change_tag, ori_content, count=1)
+            # content에 포함된 Tag목록을 자신의 tags필드에 추가
+            if not self.tags.filter(pk=tag.pk).exists():
+                self.tags.add(tag)
+        # 편집이 완료된 문자열을 html_content에 저장
+        self.html_content = ori_content
+        super().save(update_fields=['html_content'])
 
 
 class CommentLike(models.Model):
