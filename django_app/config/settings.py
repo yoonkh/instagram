@@ -37,6 +37,10 @@ ALLOWED_HOSTS = []
 AUTH_USER_MODEL = 'member.User'
 LOGIN_URL = 'member:login'
 
+# facebook
+FACEBOOK_APP_ID = '175006603036128'
+FACEBOOK_SECRET_CODE = '3f7e9ca943000137d3c5857cd59c366c'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -79,6 +83,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'member.context_processors.forms',
+                'utils.context_processors.facebook_info',
             ],
         },
     },
