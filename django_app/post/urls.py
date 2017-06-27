@@ -1,5 +1,5 @@
-from django.conf.urls import url
 
+from django.conf.urls import url
 from . import views
 
 # URL Namespace
@@ -31,7 +31,7 @@ urlpatterns = [
     # post_delete와 매칭
     url(r'^(?P<post_pk>\d+)/delete/$', views.post_delete, name='post_delete'),
 
-
+    # post_like와 매칭
     url(r'^(?P<post_pk>\d+)/like-toggle/$', views.post_like_toggle, name='post_like_toggle'),
 
     # comment_create와 매칭
@@ -48,4 +48,6 @@ urlpatterns = [
 
     # 위쪽의 결과들과 매칭되지 않을 경우
     # url(r'^.*/$', views.post_anyway, name='post_anyway'),
+    url(r'^youtube/search/$', views.youtube_search, name='youtube_search'),
+    url(r'^youtube/post/create/$', views.post_create_with_video, name='youtube_post_create'),
 ]

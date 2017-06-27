@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
@@ -22,8 +22,8 @@ __all__ = (
     'post_create',
     'post_modify',
     'post_delete',
-    'hashtag_post_list',
     'post_like_toggle',
+    'hashtag_post_list',
 )
 
 
@@ -48,19 +48,32 @@ def post_list_original(request):
 
 
 def post_list(request):
+    # 전체 Post목록 QuerySet생성 (아직 평가되지 않음)
     all_posts = Post.objects.all()
-    paginator = Paginator(all_posts, 5)
-    page = request.GET.get('page')
-    try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        posts = paginator.page(1)
-    except EmptyPage:
-        posts = paginator.page(paginator.num_pages)
+    # Paginator객체 생성, 한 페이지당 3개씩
+    p = Paginator(all_posts, 3)
 
+    # GET parameter에서 'page'값을 page_num변수에 할당
+    page_num = request.GET.get('page')
+
+    # Paginator객체에서 page메서드로 page_num변수를 인수로 전달하여 호출
+    try:
+        posts = p.page(page_num)
+
+    # 만약 page_num변수가 int형으로 변환이 불가능하면
+    except PageNotAnInteger:
+        # 1페이지에 해당하는 Post object list를 posts에 할당
+        posts = p.page(1)
+    # 만약 page_num에 객체가 없을 경우 (빈 페이지)
+    except EmptyPage:
+        # 마지막 페이지에 해당하는 Post object list를 posts에 할당
+        posts = p.page(p.num_pages)
+
+    # render에 사용할 dict객체
     context = {
         'posts': posts,
-        'comment_form': CommentForm(),
+        # 'comment_form': CommentForm(),
+        'comment_form': CommentForm(auto_id=False),
     }
     return render(request, 'post/post_list.html', context)
 
@@ -199,13 +212,11 @@ def post_delete(request, post_pk):
 @login_required
 def post_like_toggle(request, post_pk):
     # 1. post_pk에 해당하는 Post instance를 변수(post)에 할당
+    post = get_object_or_404(Post, pk=post_pk)
     # 2. post에서 PostLike로의 RelatedManager를 사용해서
     #       post속성이 post, user속성이 request.user인 PostLike가 있는지 get_or_create
-    # 3. 이후 created여부에 따라 해당 PostLike인스턴스를 삭제 또는 그냥 넘어가기
-    # 4. 리턴주소는 next가 주어질 경우 next, 아닐 경우 post_detail로
-    post = get_object_or_404(Post, pk=post_pk)
-
-    # if request.user in post.like_users:
+    # M2M필드가 중간자모델을 거치지 않을 경우
+    # if request.user not in post.like_users:
     #     post.like_users.add(request.user)
 
     # 중간자모델을 사용할 경우
@@ -214,12 +225,16 @@ def post_like_toggle(request, post_pk):
         user=request.user
     )
 
+    # 3. 이후 created여부에 따라 해당 PostLike인스턴스를 삭제 또는 그냥 넘어가기
+    # post_like_created가 get_or_create를 통해 새로 PostLike가 만들어졌는지, 아니면 기존에 있었는지 여부를 나타냄
     if not post_like_created:
+        # 기존에 PostLike가 있었다면 삭제해준다
         post_like.delete()
 
-    next = request.GET.get('next')
-    if next:
-        return redirect(next)
+    # 4. 리턴주소는 next가 주어질 경우 next, 아닐 경우 post_detail로
+    # next = request.GET.get('next')
+    # if next:
+    #     return redirect(next)
     return redirect('post:post_detail', post_pk=post.pk)
 
 
