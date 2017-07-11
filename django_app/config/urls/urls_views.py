@@ -18,7 +18,7 @@ from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
 
-
+from .. import views
 # post 앱 내부에 urls모듈을 만들어서 config의 urls에 include
 from config import views
 
