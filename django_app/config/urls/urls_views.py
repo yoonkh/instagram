@@ -25,7 +25,7 @@ from config import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^post/', include('post.urls.urls_views')),
-    url(r'^member/', include('member.urls')),
+    url(r'^member/', include('member.urls.urls_views')),
     url(r'^$', views.views_post, name='view_post'),
 ]
 urlpatterns += static(
