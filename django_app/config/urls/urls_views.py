@@ -20,11 +20,11 @@ from django.contrib import admin
 
 
 # post 앱 내부에 urls모듈을 만들어서 config의 urls에 include
-from . import views
+from config import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^post/', include('post.urls')),
+    url(r'^post/', include('post.urls.urls_views')),
     url(r'^member/', include('member.urls')),
     url(r'^$', views.views_post, name='view_post'),
 ]

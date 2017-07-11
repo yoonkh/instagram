@@ -1,6 +1,6 @@
 
 from django.conf.urls import url
-from . import views
+from .. import views
 
 # URL Namespace
 # https://docs.djangoproject.com/en/1.11/topics/http/urls/#url-namespaces
@@ -49,5 +49,6 @@ urlpatterns = [
     # 위쪽의 결과들과 매칭되지 않을 경우
     # url(r'^.*/$', views.post_anyway, name='post_anyway'),
     url(r'^youtube/search/$', views.youtube_search, name='youtube_search'),
+
     url(r'^youtube/post/create/$', views.post_create_with_video, name='youtube_post_create'),
 ]
