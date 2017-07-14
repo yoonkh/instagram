@@ -1,6 +1,8 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
@@ -25,17 +27,36 @@ def comment_create(request, post_pk):
     # CommentForm data binding
     form = CommentForm(request.POST)
 
+
+
     # form이 유효할 경우, Comment생성
     if form.is_valid():
         comment = form.save(commit=False)
         comment.author = request.user
         comment.post = post
         comment.save()
+
+        mail_subject = '{}에 작성한 글에 {}님이 댓글을 작성했습니다'.format(
+            post.created_date.strftime('%Y.%m.%d %H:%M'),
+            request.user
+        )
+        mail_content = '{}님의 댓글\n{}'.format(
+            request.user,
+            comment.content
+        )
+        send_mail(
+            mail_subject,
+            mail_content,
+            'zizou0812@gmail.com',
+            [post.author.email],
+        )
+        # message = EmailMessage(mail_subject, mail_content, to=[post.author.email])
     # form이 유효하지 않을 경우, 현재 request에 error메시지 추가
     else:
         result = '<br>'.join(['<br>'.join(v) for v in form.errors.values()])
         messages.error(request, result)
     # next값이 존재하면 해당 주소로, 없으면 post_detail로 이동
+
     if next:
         return redirect(next)
     return redirect('post:post_detail', post_pk=post.pk)
@@ -74,3 +95,5 @@ def comment_delete(request, comment_pk):
     post = comment.post
     comment.delete()
     return redirect('post:post_detail', post_pk=post.pk)
+
+

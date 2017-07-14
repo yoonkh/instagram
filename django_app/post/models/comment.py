@@ -1,11 +1,14 @@
 import re
+
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_delete
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 
 from .other import Tag
 from .post import Post
-
 
 __all__ = (
     'Comment',
@@ -55,6 +58,9 @@ class Comment(models.Model):
         # 편집이 완료된 문자열을 html_content에 저장
         self.html_content = ori_content
         super().save(update_fields=['html_content'])
+
+
+
 
 
 class CommentLike(models.Model):

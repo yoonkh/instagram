@@ -34,6 +34,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'zizou0812@gmail.com'
+EMAIL_HOST_PASSWORD = 'dkfhd18dbsen'
+EMAIL_PORT = 587
+
 AUTH_USER_MODEL = 'member.User'
 LOGIN_URL = 'member:login'
 
@@ -57,7 +63,6 @@ INSTALLED_APPS = [
     'post',
     'member',
     'utils',
-
 ]
 
 MIDDLEWARE = [
@@ -148,3 +153,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
+# Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/'
+# CELERY_IMPORTS = (
+#     'member.tasks',
+#     'post.tasks',
+# )

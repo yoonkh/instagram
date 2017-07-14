@@ -1,5 +1,5 @@
-from rest_framework import serializers
 
+from rest_framework import serializers
 from ..models import User
 
 __all__ = (
@@ -25,26 +25,21 @@ class UserCreationSerializer(serializers.Serializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
-    class Meta:
-        model = User
-        fields = (
-            'pk',
-            'username',
-            'password',
-        )
-
     def validate_username(self, username):
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError('Username already exist')
         return username
 
-    def validate_password2(self, data):
+    def validate(self, data):
         if data['password1'] != data['password2']:
             raise serializers.ValidationError('Passwords didn\'t match')
         return data
 
     def save(self, *args, **kwargs):
-        if self.request.method == 'GET':
-            return UserSerializer
-        elif self.request.method == 'POST':
-            return UserCreationSerializer
+        username = self.validated_data.get('username', '')
+        password = self.validated_data.get('password1', '')
+        user = User.objects.create_user(
+            username=username,
+            password=password
+        )
+        return user
